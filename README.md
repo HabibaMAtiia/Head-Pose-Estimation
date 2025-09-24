@@ -32,4 +32,7 @@ Models are trained, evaluated, and saved using **joblib** for production-ready d
 2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
+3. **Run inference on an image or video**
+   ```bash
+   python main.py
    
