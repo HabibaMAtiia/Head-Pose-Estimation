@@ -21,7 +21,8 @@ Models are trained, evaluated, and saved using **joblib** for production-ready d
 - **Mediapipe** (FaceMesh for landmarks)  
 - **Scikit-learn** (SVR, Random Forest)  
 - **OpenCV** (video processing & visualization)  
-- **Joblib** (model persistence)  
+- **Joblib** (model persistence)
+- **Fast API** (model deployment)
 
 
 ## ⚡ How to Run
