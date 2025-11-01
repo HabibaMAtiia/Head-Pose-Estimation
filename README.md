@@ -30,7 +30,7 @@ The system is fully production-ready with **FastAPI** deployment and **Docker** 
 ## ⚡ How to Run
 1. **Clone the repository**  
    ```bash
-   git clone https://github.com/your-username/head-pose-estimation.git
+   git clone https://github.com/HabibaMAtiia/head-pose-estimation.git
    cd head-pose-estimation
 2. **Install dependencies**
    ```bash
