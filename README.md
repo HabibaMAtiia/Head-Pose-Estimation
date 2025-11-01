@@ -1,10 +1,9 @@
 # Head Pose Estimation using Machine Learning & Mediapipe
 
 ## 📌 Project Overview
-This project implements a **head pose estimation system** that predicts the **pitch, yaw, and roll angles** of a face from video input.  
-It leverages **Mediapipe FaceMesh** for landmark extraction and machine learning models (**SVR & Random Forest**) for regression.  
-Models are trained, evaluated, and saved using **joblib** for production-ready deployment.
-
+This project implements a complete Head Pose Estimation pipeline that predicts pitch, yaw, and roll angles from image or video input.
+It combines **Mediapipe FaceMesh** for facial landmark extraction with Machine Learning **Regression Models** (SVR & Random Forest) for accurate head pose prediction.
+The system is fully production-ready with **FastAPI** deployment and **Docker** support.
 ## 🚀 Features
 - Extracts facial landmarks using **Mediapipe**  
 - Preprocesses data for ML models  
@@ -14,16 +13,19 @@ Models are trained, evaluated, and saved using **joblib** for production-ready d
   - Yaw → **MSE: 116.87, R²: 0.866**  
   - Roll → **MSE: 36.65, R²: 0.884**  
 - Saves models with **joblib** for deployment  
-- Annotates head pose axes on video and saves the output  
+- Head pose visualization with 3D axes drawn on the face
+- Supports images, videos, and API-based inference
+- Deployed as a REST API with FastAPI
+- Docker image available for easy deployment 
 
 ## 🛠️ Tech Stack
 - **Python**  
-- **Mediapipe** (FaceMesh for landmarks)  
+- **Mediapipe** (FaceMesh Landmark Extraction)  
 - **Scikit-learn** (SVR, Random Forest)  
-- **OpenCV** (video processing & visualization)  
-- **Joblib** (model persistence)
-- **Fast API** (model deployment)
-
+- **OpenCV** (Image/video processing & visualization)  
+- **Joblib** (Model Persistence)
+- **Fast API** (Model Serving)
+- **Docker** (Model Containerization & Deployment)
 
 ## ⚡ How to Run
 1. **Clone the repository**  
@@ -36,4 +38,6 @@ Models are trained, evaluated, and saved using **joblib** for production-ready d
 3. **Run inference on an image or video**
    ```bash
    python main.py
-   
+
+## 👩‍💻 Author
+**Habiba M. Attia**
