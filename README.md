@@ -39,5 +39,13 @@ The system is fully production-ready with **FastAPI** deployment and **Docker** 
    ```bash
    python main.py
 
+## 🔮 Future Improvements
+
+- Add real-time head pose estimation using webcam + FastAPI WebSockets
+
+- Build a frontend UI (HTML/JS) for uploads & live streaming
+
+- Deploy Docker image to cloud platforms (Render, Railway, AWS)
+
 ## 👩‍💻 Author
 **Habiba M. Attia**
