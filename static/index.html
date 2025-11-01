@@ -1,1 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HeadPose Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background:#f7f7f7; color:#222; padding:20px; }
+    .card { background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:14px; max-width:900px;}
+    h1 { margin:0 0 12px 0; font-size:20px; }
+    label { display:block; margin-top:8px; font-weight:600; }
+    input[type=file] { margin-top:8px; }
+    button { margin-top:10px; padding:8px 12px; border-radius:6px; border:none; background:#1976d2; color:white; cursor:pointer; }
+    button[disabled]{ background:#9fbfea; cursor:default;}
+    img.result, video.result { max-width:100%; margin-top:12px; border-radius:6px; display:block; }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .small { font-size:13px; color:#666; }
+    .status { margin-left:8px; font-weight:700; color:#1976d2; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>HeadPose — Upload Image</h1>
+    <div>
+      <input id="imgFile" type="file" accept="image/*" />
+      <div class="controls">
+        <button id="btnImg">Upload & Predict Image</button>
+        <span id="imgStatus" class="status small"></span>
+      </div>
+      <div id="imgResult"></div>
+    </div>
+  </div>
 
+  <div class="card">
+    <h1>HeadPose — Upload Video</h1>
+    <div>
+      <input id="vidFile" type="file" accept="video/*" />
+      <label class="small">Skip frames (1 = process every frame):</label>
+      <input id="skipFrames" type="number" min="1" value="1" style="width:80px;" />
+      <div class="controls">
+        <button id="btnVid">Upload & Predict Video</button>
+        <span id="vidStatus" class="status small"></span>
+      </div>
+      <div id="vidResult"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1>Real-time Webcam Stream</h1>
+    <div class="controls">
+      <button id="btnStartStream">Start Live Stream</button>
+      <button id="btnStopStream" disabled>Stop Live Stream</button>
+      <span id="streamStatus" class="status small"></span>
+    </div>
+    <div style="margin-top:12px;">
+      <!-- MJPEG stream displayed here as an <img> -->
+      <img id="liveStream" class="result" style="display:none;" alt="Live head-pose stream"/>
+    </div>
+    <div class="small" style="margin-top:8px; color:#666;">
+      Notes: For live webcam streaming the server must run on the same machine and have access to a webcam.
+      Open <code>/predict_realtime/</code> in your browser if you want the raw stream URL.
+    </div>
+  </div>
+
+<script>
+const btnImg = document.getElementById('btnImg');
+const imgFile = document.getElementById('imgFile');
+const imgResult = document.getElementById('imgResult');
+const imgStatus = document.getElementById('imgStatus');
+
+const btnVid = document.getElementById('btnVid');
+const vidFile = document.getElementById('vidFile');
+const skipFrames = document.getElementById('skipFrames');
+const vidResult = document.getElementById('vidResult');
+const vidStatus = document.getElementById('vidStatus');
+
+const btnStartStream = document.getElementById('btnStartStream');
+const btnStopStream = document.getElementById('btnStopStream');
+const liveStream = document.getElementById('liveStream');
+const streamStatus = document.getElementById('streamStatus');
+
+btnImg.onclick = async () => {
+  if (!imgFile.files.length) { alert('Choose an image first'); return; }
+  btnImg.disabled = true; imgStatus.textContent = 'Uploading...'; imgResult.innerHTML = '';
+  try {
+    const fd = new FormData();
+    fd.append('file', imgFile.files[0]);
+    const res = await fetch('/predict_image/', { method: 'POST', body: fd });
+    if (!res.ok) throw new Error('Server error');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    imgResult.innerHTML = `<img class="result" src="${url}" alt="result" />`;
+    imgStatus.textContent = 'Done';
+  } catch (err) {
+    console.error(err);
+    imgStatus.textContent = 'Error';
+    alert('Image upload failed: ' + err.message);
+  } finally {
+    btnImg.disabled = false;
+    setTimeout(()=> imgStatus.textContent = '', 3000);
+  }
+};
+
+btnVid.onclick = async () => {
+  if (!vidFile.files.length) { alert('Choose a video first'); return; }
+  btnVid.disabled = true; vidStatus.textContent = 'Uploading...'; vidResult.innerHTML = '';
+  try {
+    const fd = new FormData();
+    fd.append('file', vidFile.files[0]);
+    fd.append('skip_frames', parseInt(skipFrames.value) || 1);
+    const res = await fetch('/predict_video/', { method: 'POST', body: fd });
+    if (!res.ok) throw new Error('Server error while processing video');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    vidResult.innerHTML = `<video class="result" controls src="${url}"></video>`;
+    vidStatus.textContent = 'Done (downloadable)';
+  } catch (err) {
+    console.error(err);
+    vidStatus.textContent = 'Error';
+    alert('Video upload failed: ' + err.message);
+  } finally {
+    btnVid.disabled = false;
+    setTimeout(()=> vidStatus.textContent = '', 4000);
+  }
+};
+
+let streaming = false;
+let streamURL = '/predict_realtime/';
+
+btnStartStream.onclick = () => {
+  if (streaming) return;
+  // show MJPEG stream in img tag
+  liveStream.src = streamURL + (streamURL.includes('?') ? '&' : '?') + Date.now();
+  liveStream.style.display = 'block';
+  streamStatus.textContent = 'Live';
+  btnStartStream.disabled = true;
+  btnStopStream.disabled = false;
+  streaming = true;
+};
+
+btnStopStream.onclick = () => {
+  if (!streaming) return;
+  liveStream.src = '';
+  liveStream.style.display = 'none';
+  streamStatus.textContent = 'Stopped';
+  btnStartStream.disabled = false;
+  btnStopStream.disabled = true;
+  streaming = false;
+};
+
+// optional: try to pre-check server availability
+async function pingServer(){
+  try {
+    let r = await fetch('/');
+    return r.ok;
+  } catch(e){ return false; }
+}
+pingServer().then(ok => {
+  if (!ok) alert('Warning: the server might not be running. Start uvicorn main:app --reload and then open this page.');
+});
+</script>
+</body>
+</html>
