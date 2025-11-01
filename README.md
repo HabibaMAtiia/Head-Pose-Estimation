@@ -31,19 +31,24 @@ The system is fully production-ready with **FastAPI** deployment and **Docker** 
 ```bash
 Head-Pose-Estimation/
 │
-├── README.md                     # Project documentation
-├── dockerfile                    # Docker image configuration
-├── requirements.txt              # Python dependencies
+├── main.py                         # FastAPI entry point (API server)
+├── head_pose_estimation.py         # Core processing: face detection + pose estimation
+├── requirements.txt
+├── dockerfile
+├── README.md
 │
-├── main.py                       # FastAPI backend (image/video processing)
-├── head_pose_estimation.py    # Training & evaluation notebook
+├── models/                         # ML models (SVR/RF for yaw/pitch/roll)
+│   ├── svr_pitch.joblib
+│   ├── rf_yaw.joblib
+│   └── svr_roll.joblib
 │
-├── svr_pitch.joblib              # Saved SVR model for Pitch
-├── rf_yaw.joblib                 # Saved Random Forest model for Yaw
-├── svr_roll.joblib               # Saved SVR model for Roll
+├── static/                         # Frontend
+│   └── index.html
 │
-├── test_image.png                # Sample test image
-└── test_video.mp4                # Sample test video
+├── samples/                        # Sample images & videos
+│   ├── test_image.png
+│   └── test_video.mp4
+
 ```
 ## ⚡ How to Run
 1. **Clone the repository**  
